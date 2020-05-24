@@ -14,9 +14,9 @@ import scipy.io as io
 
 parser = argparse.ArgumentParser()
 # The locationi of training set
-parser.add_argument('--imageRoot', default='/datasets/cs252csp19-public/VOCdevkit/VOC2012/JPEGImages', help='path to input images' )
-parser.add_argument('--labelRoot', default='/datasets/cs252csp19-public/VOCdevkit/VOC2012/SegmentationClass', help='path to input images' )
-parser.add_argument('--fileList', default='/datasets/cs252csp19-public/VOCdevkit/VOC2012/ImageSets/Segmentation/val.txt', help='path to input images' )
+parser.add_argument('--imageRoot', default='/datasets/cse152-252-sp20-public/hw3_data/VOCdevkit/VOC2012/JPEGImages', help='path to input images' )
+parser.add_argument('--labelRoot', default='/datasets/cse152-252-sp20-public/hw3_data/VOCdevkit/VOC2012/SegmentationClass', help='path to input images' )
+parser.add_argument('--fileList', default='/datasets/cse152-252-sp20-public/hw3_data/VOCdevkit/VOC2012/ImageSets/Segmentation/val.txt', help='path to input images' )
 parser.add_argument('--experiment', default='test', help='the path to store sampled images and models' )
 parser.add_argument('--modelRoot', default='checkpoint', help='the path to store the testing results')
 parser.add_argument('--epochId', type=int, default=210, help='the number of epochs being trained')

@@ -13,6 +13,7 @@ from tensorboardX import SummaryWriter
 from util_tools.utils import getWriterPath
 from tqdm import tqdm
 import model
+from pathlib import Path
 # DATABASE = 'data'
 
 
@@ -68,7 +69,8 @@ def main():
     writer = SummaryWriter(getWriterPath(task=opt.experiment, date=True))
 
     # Save all the codes
-    os.system('mkdir %s' % opt.experiment )
+    # os.system('mkdir %s' % opt.experiment )
+    Path(opt.experiment).mkdir(parents=True, exist_ok=True)
     os.system('cp *.py %s' % opt.experiment )
 
     if torch.cuda.is_available() and opt.noCuda:

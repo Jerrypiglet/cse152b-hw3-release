@@ -12,11 +12,35 @@ import numpy as np
 import utils
 import scipy.io as io
 
+
+##### functions
+
+
+def sort_dataBatch(dataBatch):
+    def put_data_into_batch(data_dict, name_data, data_batch_dict, name_data_batch):
+        data_batch = data_batch_dict[name_data_batch]
+        data = data_dict[name_data]
+        # data_batch.data.resize_(data.size() )
+        # data_batch.data.copy_(data )
+        data_batch = Variable(data)
+        return data_batch
+
+    # imBatch = self.dataBatches['imBatch']
+    # # Read data
+    names_data = ['im', 'label', 'labelIndex', 'mask']
+    names_data_batch = ['imBatch', 'labelBatch', 'labelIndexBatch', 'maskBatch']
+    for i in range(len(names_data)):
+        dataBatch[names_data_batch[i]] = \
+            put_data_into_batch(dataBatch, names_data[i], 
+                                dataBatches, names_data_batch[i])
+    return dataBatch
+#####
+
 parser = argparse.ArgumentParser()
 # The locationi of training set
-parser.add_argument('--imageRoot', default='/data/datasets/cs252csp19-public/VOCdevkit/VOC2012/JPEGImages', help='path to input images' )
-parser.add_argument('--labelRoot', default='/data/datasets/cs252csp19-public/VOCdevkit/VOC2012/SegmentationClass', help='path to input images' )
-parser.add_argument('--fileList', default='/data/datasets/cs252csp19-public/VOCdevkit/VOC2012/ImageSets/Segmentation/val.txt', help='path to input images' )
+parser.add_argument('--imageRoot', default='/datasets/cse152-252-sp20-public/hw3_data/VOCdevkit/VOC2012/JPEGImages', help='path to input images' )
+parser.add_argument('--labelRoot', default='/datasets/cse152-252-sp20-public/hw3_data/VOCdevkit/VOC2012/SegmentationClass', help='path to input images' )
+parser.add_argument('--fileList', default='/datasets/cse152-252-sp20-public/hw3_data/VOCdevkit/VOC2012/ImageSets/Segmentation/val.txt', help='path to input images' )
 parser.add_argument('--experiment', default='test', help='the path to store sampled images and models' )
 parser.add_argument('--modelRoot', default='checkpoint', help='the path to store the testing results')
 parser.add_argument('--epochId', type=int, default=210, help='the number of epochs being trained')
@@ -33,6 +57,8 @@ parser.add_argument('--val_training', action='store_true', help='use training da
 opt = parser.parse_args()
 print(opt)
 
+
+
 colormap = io.loadmat(opt.colormap )['cmap']
 
 assert(opt.batchSize == 1 )
@@ -48,7 +74,7 @@ if opt.isSpp:
     opt.modelRoot += '_spp'
 
 # Save all the codes
-# os.system('mkdir %s' % opt.experiment )
+os.system('mkdir %s' % opt.experiment )
 # os.system('cp *.py %s' % opt.experiment )
 
 if torch.cuda.is_available() and opt.noCuda:
@@ -98,12 +124,19 @@ decoder = decoder.eval()
 
 # Move network and containers to gpu
 if not opt.noCuda:
-    imBatch = imBatch.cuda(opt.gpuId )
-    labelBatch = labelBatch.cuda(opt.gpuId )
-    labelIndexBatch = labelIndexBatch.cuda(opt.gpuId )
-    maskBatch = maskBatch.cuda(opt.gpuId )
-    encoder = encoder.cuda(opt.gpuId )
-    decoder = decoder.cuda(opt.gpuId )
+    device = 'cuda'
+#     imBatch = imBatch.cuda(opt.gpuId )
+#     labelBatch = labelBatch.cuda(opt.gpuId )
+#     labelIndexBatch = labelIndexBatch.cuda(opt.gpuId )
+#     maskBatch = maskBatch.cuda(opt.gpuId )
+#     encoder = encoder.cuda(opt.gpuId )
+#     decoder = decoder.cuda(opt.gpuId )
+    imBatch = imBatch.to(device)
+    labelBatch = labelBatch.to(device)
+    labelIndexBatch = labelIndexBatch.to(device)
+    maskBatch = maskBatch.to(device)
+else:
+    device = 'cpu'
 
 # Initialize dataLoader
 segDataset = dataLoader.BatchLoader(
@@ -126,22 +159,38 @@ for i, dataBatch in enumerate(segLoader ):
     iteration += 1
 
     # Read data
-    image_cpu = dataBatch['im']
-    imBatch.data.resize_(image_cpu.size() )
-    imBatch.data.copy_(image_cpu )
+#     image_cpu = dataBatch['im']
+#     #imBatch.data.resize_(image_cpu.size() )
+#     #imBatch.data.copy_(image_cpu )
+#     imBatch = Variable(image_cpu)
 
-    label_cpu = dataBatch['label']
-    labelBatch.data.resize_(label_cpu.size() )
-    labelBatch.data.copy_(label_cpu )
+#     label_cpu = dataBatch['label']
+#     #labelBatch.data.resize_(label_cpu.size() )
+#     #labelBatch.data.copy_(label_cpu )
+#     labelBatch = Variable(label_cpu )
 
-    labelIndex_cpu = dataBatch['labelIndex' ]
-    labelIndexBatch.data.resize_(labelIndex_cpu.size() )
-    labelIndexBatch.data.copy_(labelIndex_cpu )
+#     labelIndex_cpu = dataBatch['labelIndex' ]
+#     #labelIndexBatch.data.resize_(labelIndex_cpu.size() )
+#     #labelIndexBatch.data.copy_(labelIndex_cpu )
+#     labelIndexBatch = Variable(labelIndex_cpu )
 
-    mask_cpu = dataBatch['mask' ]
-    maskBatch.data.resize_( mask_cpu.size() )
-    maskBatch.data.copy_( mask_cpu )
+#     mask_cpu = dataBatch['mask' ]
+#     maskBatch.data.resize_( mask_cpu.size() )
+#     maskBatch.data.copy_( mask_cpu )
+#     dataBatch = sort_dataBatch(dataBatch)
+    imBatch = Variable(dataBatch['im']).to(device)
+    labelBatch = Variable(dataBatch['label']).to(device)
+    labelIndexBatch = Variable(dataBatch['labelIndex']).to(device)
+    maskBatch = Variable(dataBatch['mask']).to(device)
+    # Train network
+#     for e in list(self.optimizers):
+#         self.optimizers[e].zero_grad()
 
+#     imBatch = imBatch.to(self.device)
+#     labelBatch = labelBatch.to(self.device)
+#     labelIndexBatch = labelIndexBatch.to(self.device)
+#     maskBatch = maskBatch.to(self.device)
+        
     # Test network
     x1, x2, x3, x4, x5 = encoder(imBatch )
     pred = decoder(imBatch, x1, x2, x3, x4, x5 )
