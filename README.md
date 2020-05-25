@@ -11,7 +11,7 @@
  (b) Rename your submission files as Lastname_Firstname.ipynb and Lastname_Firstname.pdf.  
  (c) Correctly select pages for each answer on Gradescope to allow proper grading.
 
-6. **Due date:** Assignments are due Thu, May 21, by 4pm PST.
+6. **Due date:** Please check the jupyter notebook.
 
 ### Steps to access and complete homework
 - Clone the homework repository
@@ -50,7 +50,7 @@
     ```
 - You will be provided with a URL that you can open locally:
     ![](demo_jupyter.png)
-    - connect to UCSD VPN
+    - Connect to UCSD VPN
     - Click on the link. Then natigate to the jupyter notebook for a question which you are going to git clone as follows
 
     
