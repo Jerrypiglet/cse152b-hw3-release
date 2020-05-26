@@ -48,6 +48,13 @@
     export K8S_TIMEOUT_SECONDS=43200
     launch-scipy-ml.sh -i ucsdets/cse152-252-notebook:latest -g 1 -p normal
     ```
+- Disconnect during training
+    ```
+    launch-scipy-ml.sh -b # launch the environment with '-b', it should have 12 hour limit
+    kubectl get pods
+    kubesh <PODNAME> # connect to the pod
+    kubectl delete pod <PODNAME>
+    ```
 - You will be provided with a URL that you can open locally:
     ![](demo_jupyter.png)
     - Connect to UCSD VPN
