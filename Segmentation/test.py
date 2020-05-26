@@ -14,9 +14,9 @@ import scipy.io as io
 
 parser = argparse.ArgumentParser()
 # The locationi of training set
-parser.add_argument('--imageRoot', default='/datasets/cs252csp19-public/VOCdevkit/VOC2012/JPEGImages', help='path to input images' )
-parser.add_argument('--labelRoot', default='/datasets/cs252csp19-public/VOCdevkit/VOC2012/SegmentationClass', help='path to input images' )
-parser.add_argument('--fileList', default='/datasets/cs252csp19-public/VOCdevkit/VOC2012/ImageSets/Segmentation/val.txt', help='path to input images' )
+parser.add_argument('--imageRoot', default='/datasets/cse152-252-sp20-public/hw3_data/VOCdevkit/VOC2012/JPEGImages', help='path to input images' )
+parser.add_argument('--labelRoot', default='/datasets/cse152-252-sp20-public/hw3_data/VOCdevkit/VOC2012/SegmentationClass', help='path to input images' )
+parser.add_argument('--fileList', default='/datasets/cse152-252-sp20-public/hw3_data/VOCdevkit/VOC2012/ImageSets/Segmentation/val.txt', help='path to input images' )
 parser.add_argument('--experiment', default='test', help='the path to store sampled images and models' )
 parser.add_argument('--modelRoot', default='checkpoint', help='the path to store the testing results')
 parser.add_argument('--epochId', type=int, default=210, help='the number of epochs being trained')
@@ -77,12 +77,13 @@ decoder = decoder.eval()
 
 # Move network and containers to gpu
 if not opt.noCuda:
-    imBatch = imBatch.cuda(opt.gpuId )
-    labelBatch = labelBatch.cuda(opt.gpuId )
-    labelIndexBatch = labelIndexBatch.cuda(opt.gpuId )
-    maskBatch = maskBatch.cuda(opt.gpuId )
-    encoder = encoder.cuda(opt.gpuId )
-    decoder = decoder.cuda(opt.gpuId )
+    device = 'cuda'
+    imBatch = imBatch.to(device)
+    labelBatch = labelBatch.to(device)
+    labelIndexBatch = labelIndexBatch.to(device)
+    maskBatch = maskBatch.to(device)
+else:
+    device = 'cpu'
 
 # Initialize dataLoader
 segDataset = dataLoader.BatchLoader(
@@ -102,21 +103,10 @@ for i, dataBatch in enumerate(segLoader ):
     iteration += 1
 
     # Read data
-    image_cpu = dataBatch['im']
-    imBatch.data.resize_(image_cpu.size() )
-    imBatch.data.copy_(image_cpu )
-
-    label_cpu = dataBatch['label']
-    labelBatch.data.resize_(label_cpu.size() )
-    labelBatch.data.copy_(label_cpu )
-
-    labelIndex_cpu = dataBatch['labelIndex' ]
-    labelIndexBatch.data.resize_(labelIndex_cpu.size() )
-    labelIndexBatch.data.copy_(labelIndex_cpu )
-
-    mask_cpu = dataBatch['mask' ]
-    maskBatch.data.resize_( mask_cpu.size() )
-    maskBatch.data.copy_( mask_cpu )
+    imBatch = Variable(dataBatch['im']).to(device)
+    labelBatch = Variable(dataBatch['label']).to(device)
+    labelIndexBatch = Variable(dataBatch['labelIndex']).to(device)
+    maskBatch = Variable(dataBatch['mask']).to(device)
 
     # Test network
     x1, x2, x3, x4, x5 = encoder(imBatch )
