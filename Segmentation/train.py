@@ -10,12 +10,12 @@ import torch.nn as nn
 import os
 import numpy as np
 from tensorboardX import SummaryWriter
-from util_tools.utils import getWriterPath
+from util_tools import getWriterPath, worker_init_fn, datasize
 from tqdm import tqdm
 import model
 from pathlib import Path
-# DATABASE = 'data'
-
+from Train_model_frontend import Train_model_frontend
+import pathlib
 
 
 def main():
@@ -35,11 +35,10 @@ def main():
 
     parser.add_argument('--numClasses', type=int, default=21, help='the number of classes' )
     parser.add_argument('--isDilation', action='store_true', help='whether to use dialated model or not' )
-    parser.add_argument('--isSpp', action='store_true', help='whether to do spatial pyramid or not' )
 
     parser.add_argument('--batchSize', type=int, default=8, help='the size of a batch')
     parser.add_argument('--nepoch', type=int, default=8, help='the training epoch')
-    parser.add_argument('--num_workers', type=int, default=0, help='the training epoch')
+    parser.add_argument('--num_workers', type=int, default=8, help='the training epoch')
     parser.add_argument('--initLR', type=float, default=0.1, help='the initial learning rate')
     parser.add_argument('--noCuda', action='store_true', help='do not use cuda for training')
     parser.add_argument('--gpuId', type=int, default=0, help='gpu id used for training the network')
@@ -55,18 +54,14 @@ def main():
     opt = parser.parse_args()
     print(opt)
 
-    if opt.isSpp == True :
-        opt.isDilation = False
-
     if opt.isDilation:
         opt.experiment += '_dilation'
         opt.modelRoot += '_dilation'
-    if opt.isSpp:
-        opt.experiment += '_spp'
-        opt.modelRoot += '_spp'
 
     # init writer
-    writer = SummaryWriter(getWriterPath(task=opt.experiment, date=True))
+    summary_path = getWriterPath(task=opt.experiment, date=True)
+    print('== Summary path:', summary_path)
+    writer = SummaryWriter(summary_path)
 
     # Save all the codes
     # os.system('mkdir %s' % opt.experiment )
@@ -90,11 +85,10 @@ def main():
             imWidth = opt.imWidth, imHeight = opt.imHeight
             )
 
-    from util_tools.utils import worker_init_fn
     num_workers = opt.num_workers
     print(f"num_workers: {num_workers}")
-    segLoader = DataLoader(segDataset, batch_size=opt.batchSize, num_workers=num_workers, shuffle=True,
-                            worker_init_fn=worker_init_fn)
+    # segLoader = DataLoader(segDataset, batch_size=opt.batchSize, num_workers=num_workers, shuffle=True,
+    #                         worker_init_fn=worker_init_fn)
 
     test_loader = DataLoader(test_dataset, batch_size=opt.batchSize, num_workers=num_workers, shuffle=True,
                             worker_init_fn=worker_init_fn)
@@ -111,12 +105,10 @@ def main():
     val_loader = DataLoader(val_dataset, batch_size=opt.batchSize, num_workers=num_workers, shuffle=True,
                             worker_init_fn=worker_init_fn)
 
-    from util_tools.utils import datasize
     datasize(train_loader, opt.batchSize, tag='train')
     datasize(val_loader, opt.batchSize, tag='val')
     datasize(test_loader, opt.batchSize, tag='test')
 
-    from Train_model_frontend import Train_model_frontend
     train_agent = Train_model_frontend(opt)
     train_agent.loadModel()
     train_agent.prepare_var()

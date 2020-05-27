@@ -1,6 +1,16 @@
 import numpy as np
 import cv2
 
+def getWriterPath(task='train', exper_name='', date=True):
+    import datetime
+    prefix = 'runs/'
+    str_date_time = ''
+    if exper_name != '':
+        exper_name += '_'
+    if date:
+        str_date_time = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+    return prefix + task + '/' + exper_name + str_date_time
+
 def computeAccuracy( pred, labelIndexBatch, maskBatch, numClasses = 21 ):
     hist = np.zeros(numClasses * numClasses, dtype=np.int64 )
 
@@ -52,6 +62,28 @@ def save_label(label, mask, cmap, name, nrows, ncols ):
             outputImage[rs:rs+imHeight, cs:cs+imWidth, :] = labelIm
 
     outputImage = (np.clip(outputImage, 0, 1) * 255).astype(np.float32 )
-    cv2.imwrite(name, outputImage[:, :, ::-1] )
+    if name is None:
+        return outputImage[:, :, ::-1]
+    else:
+        cv2.imwrite(name, outputImage[:, :, ::-1] )
 
     return
+
+def sort_dataBatch(dataBatch):
+    def put_data_into_batch(data_dict, name_data, data_batch_dict, name_data_batch):
+        data_batch = data_batch_dict[name_data_batch]
+        data = data_dict[name_data]
+        # data_batch.data.resize_(data.size() )
+        # data_batch.data.copy_(data )
+        data_batch = Variable(data)
+        return data_batch
+
+    # imBatch = self.dataBatches['imBatch']
+    # # Read data
+    names_data = ['im', 'label', 'labelIndex', 'mask']
+    names_data_batch = ['imBatch', 'labelBatch', 'labelIndexBatch', 'maskBatch']
+    for i in range(len(names_data)):
+        dataBatch[names_data_batch[i]] = \
+            put_data_into_batch(dataBatch, names_data[i], 
+                                dataBatches, names_data_batch[i])
+    return dataBatch

@@ -113,59 +113,103 @@ class decoder(nn.Module ):
 
 
 
+# class encoderDilation(nn.Module ):
+#     def __init__(self ):
+#         super(encoderDilation, self ).__init__()
+
+#         ## IMPLEMENT YOUR CODE HERE
+
+#     def forward(self, im ):
+
+#         ## IMPLEMENT YOUR CODE HERE
+
+#         return x1, x2, x3, x4, x5
+
+
+# class decoderDilation(nn.Module ):
+#     def __init__(self, isSpp = False ):
+#         super(decoderDilation, self).__init__()
+
+#         ## IMPLEMENT YOUR CODE HERE
+
+#     def forward(self, im, x1, x2, x3, x4, x5):
+
+#         ## IMPLEMENT YOUR CODE HERE
+
+
+#         return pred
+
+
 class encoderDilation(nn.Module ):
     def __init__(self ):
         super(encoderDilation, self ).__init__()
 
         ## IMPLEMENT YOUR CODE HERE
+        self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
+        self.bn1 = nn.BatchNorm2d(64 )
+        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+
+        self.b1_1 = ResBlock(64, 64, 1)
+        self.b1_2 = ResBlock(64, 64, 1)
+
+        self.b2_1 = ResBlock(64, 128, 2)
+        self.b2_2 = ResBlock(128, 128, 1)
+
+        self.b3_1 = ResBlock(128, 256, stride=1, dilation=2)
+        self.b3_2 = ResBlock(256, 256, stride=1, dilation=2)
+
+        self.b4_1 = ResBlock(256, 512, stride=1, dilation=4)
+        self.b4_2 = ResBlock(512, 512, stride=1, dilation=4)
 
     def forward(self, im ):
 
         ## IMPLEMENT YOUR CODE HERE
-
+        x1 = F.relu(self.bn1(self.conv1(im) ), inplace=True)
+        x2 = self.b1_2(self.b1_1(self.maxpool(x1 ) ) )
+        x3 = self.b2_2(self.b2_1(x2 ) )
+        x4 = self.b3_2(self.b3_1(x3 ) )
+        x5 = self.b4_2(self.b4_1(x4 ) )
         return x1, x2, x3, x4, x5
 
-
-class decoderDilation(nn.Module ):
+class decoderDilation(decoder):
     def __init__(self, isSpp = False ):
         super(decoderDilation, self).__init__()
 
         ## IMPLEMENT YOUR CODE HERE
 
-    def forward(self, im, x1, x2, x3, x4, x5):
+    # def forward(self, im, x1, x2, x3, x4, x5):
 
-        ## IMPLEMENT YOUR CODE HERE
-
-
-        return pred
+    #     ## IMPLEMENT YOUR CODE HERE
 
 
-
-class encoderSPP(nn.Module ):
-    def __init__(self ):
-        super(encoderDilation, self ).__init__()
-
-        ## IMPLEMENT YOUR CODE HERE
-
-    def forward(self, im ):
-
-        ## IMPLEMENT YOUR CODE HERE
-
-        return x1, x2, x3, x4, x5
+    #     return pred
 
 
-class decoderSPP(nn.Module ):
-    def __init__(self, isSpp = False ):
-        super(decoderDilation, self).__init__()
+# class encoderSPP(nn.Module ):
+#     def __init__(self ):
+#         super(encoderDilation, self ).__init__()
 
-        ## IMPLEMENT YOUR CODE HERE
+#         ## IMPLEMENT YOUR CODE HERE
 
-    def forward(self, im, x1, x2, x3, x4, x5):
+#     def forward(self, im ):
 
-        ## IMPLEMENT YOUR CODE HERE
+#         ## IMPLEMENT YOUR CODE HERE
+
+#         return x1, x2, x3, x4, x5
 
 
-        return pred
+# class decoderSPP(nn.Module ):
+#     def __init__(self, isSpp = False ):
+#         super(decoderDilation, self).__init__()
+
+#         ## IMPLEMENT YOUR CODE HERE
+
+#     def forward(self, im, x1, x2, x3, x4, x5):
+
+#         ## IMPLEMENT YOUR CODE HERE
+
+
+#         return pred
 
 
 def loadPretrainedWeight(network, isOutput = False ):
