@@ -22,9 +22,9 @@ class Train_model_frontend(object):
     """ Wrapper around pytorch net to help with pre and post image processing. """
     def __init__(self, opt):
         self.opt = opt
-        self.tensorboard_interval = 5
-        self.save_interval = 10
-        self.validation_interval = 100
+        self.tensorboard_interval = 100
+        self.save_interval = 1000
+        self.validation_interval = 200
         self.validation_size = 5
         self._eval = False
         self.device = 'cpu'
@@ -43,7 +43,7 @@ class Train_model_frontend(object):
 
     @property
     def train_loader(self):
-        print("get dataloader")
+        # print("get dataloader")
         return self._train_loader
 
     @train_loader.setter
@@ -122,7 +122,7 @@ class Train_model_frontend(object):
                 fileList = opt.fileList,
                 imWidth = opt.imWidth, imHeight = opt.imHeight
                 )
-        # segLoader = DataLoader(segDataset, batch_size=opt.batchSize, num_workers=8, shuffle=True )
+        # segLoader = DataLoader(segDataset, batch_size=opt.batchSize, num_workers=1, shuffle=True )
 
 
         self.nets = {'encoder': encoder, 'decoder': decoder}
@@ -150,7 +150,7 @@ class Train_model_frontend(object):
         opt = self.opt
         self.lossArr = []
         self.accuracyArr = []
-        # epoch = opt.epochId
+        # epoch = opt.iterId
         self.accuracy = np.zeros(opt.numClasses, dtype=np.float32 )
         # for i, dataBatch in enumerate(segLoader ):
         for epoch in range(0, opt.nepoch ):
@@ -158,6 +158,7 @@ class Train_model_frontend(object):
             self.iteration += 1
             # trainingLog = open('{0}/trainingLog_{1}.txt'.format(opt.experiment, epoch), 'w')
             self.confcounts = np.zeros( (opt.numClasses, opt.numClasses), dtype=np.int64 )        
+            print('====== Training epoch %d...'%epoch)
             for i, dataBatch in tqdm(enumerate(self.train_loader)):
                 self.train_val_sample(dataBatch)
                 self.iteration += 1
@@ -241,7 +242,7 @@ class Train_model_frontend(object):
         # print("pred: ", pred)
         # print("labelBatch: ", labelBatch)
 
-
+        # if task=='train':
         loss.backward()
         for e in list(self.optimizers):
             self.optimizers[e].step()
@@ -267,6 +268,7 @@ class Train_model_frontend(object):
 
         ## add to tensorboard
         if self.iteration % self.tensorboard_interval == 0:
+            print('== Adding to Tensorboard')
             # calculate accuracy 
             hist = utils.computeAccuracy(pred, labelIndexBatch, maskBatch )
             self.confcounts += hist
@@ -396,7 +398,7 @@ def main():
             )
 
     
-    segLoader = DataLoader(segDataset, batch_size=opt.batchSize, num_workers=8, shuffle=True,
+    segLoader = DataLoader(segDataset, batch_size=opt.batchSize, num_workers=1, shuffle=True,
                             worker_init_fn=worker_init_fn)
 
     datasize(segLoader, opt.batchSize, tag='train')

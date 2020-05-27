@@ -20,7 +20,7 @@ parser.add_argument('--labelRoot', default='/datasets/cse152-252-sp20-public/hw3
 parser.add_argument('--fileList', default='/datasets/cse152-252-sp20-public/hw3_data/VOCdevkit/VOC2012/ImageSets/Segmentation/val.txt', help='path to input images' )
 parser.add_argument('--experiment', default='test', help='the path to store sampled images and models' )
 parser.add_argument('--modelRoot', default='checkpoint', help='the path to store the testing results')
-parser.add_argument('--epochId', type=int, default=210, help='the number of epochs being trained')
+parser.add_argument('--iterId', type=int, default=210, help='the number of epochs being trained')
 parser.add_argument('--ckptFile', default='NA', help='the path to your trained checkpoint file')
 parser.add_argument('--batchSize', type=int, default=1, help='the size of a batch' )
 parser.add_argument('--numClasses', type=int, default=21, help='the number of classes' )
@@ -85,10 +85,10 @@ if data_paral:
 
 if opt.ckptFile == 'NA':
     print("modelRoot: ", opt.modelRoot)
-    print("epochId: ", opt.epochId)
+    print("iterId: ", opt.iterId)
 
-    encoder.load_state_dict(torch.load('%s/encoder_%d.pth' % (opt.modelRoot, opt.epochId) ) )
-    decoder.load_state_dict(torch.load('%s/decoder_%d.pth' % (opt.modelRoot, opt.epochId) ) )
+    encoder.load_state_dict(torch.load('%s/encoder_%d.pth' % (opt.modelRoot, opt.iterId) ) )
+    decoder.load_state_dict(torch.load('%s/decoder_%d.pth' % (opt.modelRoot, opt.iterId) ) )
 else:
     encoder.load_state_dict(torch.load(opt.ckptFile))
     decoder.load_state_dict(torch.load(opt.ckptFile))
@@ -119,7 +119,7 @@ segLoader = DataLoader(segDataset, batch_size=opt.batchSize, num_workers=1, shuf
 
 lossArr, accuracyArr = [], []
 iteration = 0
-epoch = opt.epochId
+epoch = opt.iterId
 confcounts = np.zeros( (opt.numClasses, opt.numClasses), dtype=np.int64 )
 accuracy = np.zeros(opt.numClasses, dtype=np.float32 )
 testingLog = open('{0}/testingLog_{1}.txt'.format(opt.experiment, epoch), 'w')
@@ -170,4 +170,4 @@ for i, dataBatch in enumerate(segLoader ):
 
 testingLog.close()
 # Save the accuracy
-np.save('%s/accuracy_%d.npy' % (opt.experiment, opt.epochId), accuracy )
+np.save('%s/accuracy_%d.npy' % (opt.experiment, opt.iterId), accuracy )

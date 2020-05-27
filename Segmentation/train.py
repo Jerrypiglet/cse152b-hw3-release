@@ -38,7 +38,7 @@ def main():
 
     parser.add_argument('--batchSize', type=int, default=8, help='the size of a batch')
     parser.add_argument('--nepoch', type=int, default=8, help='the training epoch')
-    parser.add_argument('--num_workers', type=int, default=8, help='the training epoch')
+    parser.add_argument('--num_workers', type=int, default=1, help='the training epoch')
     parser.add_argument('--initLR', type=float, default=0.1, help='the initial learning rate')
     parser.add_argument('--noCuda', action='store_true', help='do not use cuda for training')
     parser.add_argument('--gpuId', type=int, default=0, help='gpu id used for training the network')

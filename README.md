@@ -46,7 +46,7 @@
     ```
     export K8S_PRIORITY_CLASS_NAME=normal
     export K8S_TIMEOUT_SECONDS=43200
-    launch-scipy-ml.sh -i ucsdets/cse152-252-notebook:latest -g 1 -p normal
+    launch-scipy-ml.sh -i ucsdets/cse152-252-notebook:latest -g 1 -p normal -m 16
     ```
 - Disconnect during training
     ```
