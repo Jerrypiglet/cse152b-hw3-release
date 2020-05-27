@@ -84,12 +84,27 @@ class Train_model_frontend(object):
         labelIndexBatch = Variable(torch.LongTensor(opt.batchSize, 1, 300, 300) )
 
         # Initialize network
+        # if opt.isDilation:
+        #     print("load dilation!")
+        #     encoder = model.encoderDilation().cuda()
+        #     decoder = model.decoderDilation().cuda()
+        # elif opt.isSpp:
+        #     print("load SPP: Pyramid Scene Parsing Network!")
+        #     encoder = model.encoderSPP().cuda()
+        #     decoder = model.decoderSPP().cuda()
+        # else:
+        #     print("load vanilla Unet!")
+        #     encoder = model.encoder().cuda()
+        #     decoder = model.decoder().cuda()
+
+        # Initialize network
         if opt.isDilation:
-            print("load dilation!")
             encoder = model.encoderDilation().cuda()
             decoder = model.decoderDilation().cuda()
+        elif opt.isSpp:
+            encoder = model.encoderDilation().cuda()
+            decoder = model.decoderDilation(isSpp = True).cuda()
         else:
-            print("load vanilla Unet!")
             encoder = model.encoder().cuda()
             decoder = model.decoder().cuda()
         if opt.loadParams:
@@ -371,6 +386,7 @@ def main():
 
     parser.add_argument('--numClasses', type=int, default=21, help='the number of classes' )
     parser.add_argument('--isDilation', action='store_true', help='whether to use dialated model or not' )
+    parser.add_argument('--isSpp', action='store_true', help='whether to do spatial pyramid or not' )
 
     parser.add_argument('--batchSize', type=int, default=8, help='the size of a batch')
     parser.add_argument('--nepoch', type=int, default=8, help='the training epoch')
