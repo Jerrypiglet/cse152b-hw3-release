@@ -50,7 +50,7 @@ if opt.isSpp:
     opt.experiment += '_spp'
 
 # Save all the codes
-os.system('mkdir %s' % opt.experiment )
+os.system('mkdir -p %s' % opt.experiment )
 os.system('cp *.py %s' % opt.experiment )
 
 writer = SummaryWriter(opt.experiment, flush_secs=1)

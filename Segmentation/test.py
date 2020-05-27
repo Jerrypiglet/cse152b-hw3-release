@@ -47,7 +47,7 @@ if opt.isSpp:
     opt.modelRoot += '_spp'
 
 # Save all the codes
-os.system('mkdir %s' % opt.experiment )
+os.system('mkdir -p %s' % opt.experiment )
 os.system('cp *.py %s' % opt.experiment )
 
 if torch.cuda.is_available() and opt.noCuda:
