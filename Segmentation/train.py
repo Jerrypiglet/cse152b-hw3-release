@@ -68,8 +68,8 @@ labelIndexBatch = Variable(torch.LongTensor(opt.batchSize, 1, opt.imHeight, opt.
 # Initialize network
 if opt.isDilation:
     encoder = model.encoderDilation()
-    # decoder = model.decoderDilation()
-    decoder = model.decoder()
+    decoder = model.decoderDilation()
+    # decoder = model.decoder()
 elif opt.isSpp:
     encoder = model.encoderDilation()
     decoder = model.decoderDilation(isSpp = True)
