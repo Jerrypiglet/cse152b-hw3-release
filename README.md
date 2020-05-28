@@ -1,4 +1,4 @@
-# CSE252C HW3
+# CSE152B HW3
 ## 0. Homework instructions
 
 1. Attempt all questions.
@@ -15,8 +15,8 @@
 
 ### Steps to access and complete homework
 - Clone the homework repository
-    - ``git clone https://github.com/eric-yyjau/cse252c_hw3-release.git``
-- The homework is in the Jupyter Notebook ``hw3_questions.ipynb``
+    - ``git clone https://github.com/Jerrypiglet/cse152b-hw3-release.git``
+- The homework is in the Jupyter Notebook ``cse152b-hw3.ipynb``
 - Follow the README (this file) for installation, data and compute instructions.
 
 ## 1. Installation instructions
