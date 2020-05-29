@@ -36,7 +36,7 @@ def str2bool(v):
 parser = argparse.ArgumentParser(
     description='Single Shot MultiBox Detector Evaluation')
 parser.add_argument('--trained_model',
-                    default='weights/VOC.pth', type=str,
+                    default='/datasets/cse152-252-sp20-public/hw3_data/detection/weights/VOC.pth', type=str,
                     help='Trained state_dict file path to open')
 parser.add_argument('--save_folder', default='eval/', type=str,
                     help='File path to save results')
@@ -422,6 +422,7 @@ if __name__ == '__main__':
     # load net
     num_classes = len(labelmap) + 1                      # +1 for background
     net = build_ssd('test', 300, num_classes)            # initialize SSD
+    print(args.trained_model)
     net.load_state_dict(torch.load(args.trained_model))
     net.eval()
     print('Finished loading model!')
